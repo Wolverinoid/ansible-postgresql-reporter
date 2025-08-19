@@ -1,33 +1,62 @@
-# ansible-postgresql-reporter# Role Name
+# PostgreSQL Exporter Role
 
-A brief description of the role goes here.
+This Ansible role installs and configures the PostgreSQL exporter for Prometheus monitoring.
 
 ## Requirements
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here.
+- Ansible 2.9 or higher
+- Target system with systemd
+- PostgreSQL server accessible from the target system
 
 ## Role Variables
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+### Network Configuration
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `listen_interface` | `enp7s0` | Network interface to bind the exporter to |
+
+### PostgreSQL Exporter Configuration
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `postgres_exporter_version` | `0.17.1` | Version of PostgreSQL exporter to install |
+| `postgres_exporter_arch` | `linux-amd64` | Architecture of the exporter binary |
+
+### PostgreSQL Connection Parameters
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `postgres_exporter_host` | `localhost` | PostgreSQL server hostname |
+| `postgres_exporter_port` | `5432` | PostgreSQL server port |
+| `postgres_exporter_user` | `postgres` | PostgreSQL username |
+| `postgres_exporter_password` | `postgres` | PostgreSQL password |
+| `postgres_exporter_dbname` | `postgres` | PostgreSQL database name |
+| `postgres_exporter_sslmode` | `disable` | PostgreSQL SSL mode |
 
 ## Dependencies
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+None.
 
 ## Example Playbook
 
-Including an example of how to use your role:
-
 ```yaml
-- hosts: servers
+- hosts: database_servers
   roles:
-     - { role: username.rolename, x: 42 }
+    - role: postgres_exporter
+      vars:
+        listen_interface: eth0
+        postgres_exporter_version: "0.17.1"
+        postgres_exporter_host: "db.example.com"
+        postgres_exporter_user: "monitoring"
+        postgres_exporter_password: "secure_password"
+        postgres_exporter_dbname: "postgres"
 ```
 
 ## License
 
-Choose a license (e.g., BSD, MIT, GPLv2, GPLv3, etc.)
+MIT
 
 ## Author Information
 
-An optional section for the role authors to include contact information, or a website.
+Your Name - your.email@example.com

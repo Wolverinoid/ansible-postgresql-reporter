@@ -1,0 +1,7 @@
+{
+    "name": "file: templates/postgres_exporter.service.j2",
+    "id": "r4.files.sec1.8.3",
+    "text_content": "FILE: templates/postgres_exporter.service.j2\nDESCRIPTION: ",
+    "layer": "main",
+    "parent_id": "r4.files.sec1.8"
+}

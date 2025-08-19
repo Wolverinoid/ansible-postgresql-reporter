@@ -1,2 +1,67 @@
 ---
-# tasks file for role
+# tasks file for postgres_exporter role
+
+- name: Create postgres_exporter user
+  user:
+    name: postgres_exporter
+    shell: /sbin/nologin
+    system: yes
+    create_home: no
+  become: yes
+
+- name: Download PostgreSQL exporter
+  get_url:
+    url: "https://github.com/prometheus-community/postgres_exporter/releases/download/v{{ postgres_exporter_version }}/postgres_exporter-{{ postgres_exporter_version }}.{{ postgres_exporter_arch }}.tar.gz"
+    dest: "/tmp/postgres_exporter-{{ postgres_exporter_version }}.{{ postgres_exporter_arch }}.tar.gz"
+  become: yes
+
+- name: Create directory for PostgreSQL exporter
+  file:
+    path: /opt/postgres_exporter
+    state: directory
+    owner: postgres_exporter
+    group: postgres_exporter
+    mode: '0755'
+  become: yes
+
+- name: Extract PostgreSQL exporter
+  unarchive:
+    src: "/tmp/postgres_exporter-{{ postgres_exporter_version }}.{{ postgres_exporter_arch }}.tar.gz"
+    dest: /tmp
+    remote_src: yes
+  become: yes
+
+- name: Move PostgreSQL exporter files to /opt/postgres_exporter
+  shell: "cp -r /tmp/postgres_exporter-{{ postgres_exporter_version }}.{{ postgres_exporter_arch }}/* /opt/postgres_exporter/"
+  become: yes
+
+- name: Get IP address of the specified interface
+  set_fact:
+    interface_ip: "{{ ansible_facts[listen_interface]['ipv4']['address'] }}"
+  when: listen_interface in ansible_facts
+
+- name: Create .env file for PostgreSQL exporter
+  template:
+    src: env.j2
+    dest: /opt/postgres_exporter/.env
+    owner: postgres_exporter
+    group: postgres_exporter
+    mode: '0600'
+  become: yes
+
+- name: Create systemd service file
+  template:
+    src: postgres_exporter.service.j2
+    dest: /etc/systemd/system/postgres_exporter.service
+    owner: root
+    group: root
+    mode: '0644'
+  become: yes
+  notify: restart postgres_exporter
+
+- name: Enable and start PostgreSQL exporter service
+  systemd:
+    name: postgres_exporter
+    enabled: yes
+    state: started
+  become: yes

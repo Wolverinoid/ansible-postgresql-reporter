@@ -1,2 +1,13 @@
 ---
 # defaults file for role
+listen_interface: enp7s0
+postgres_exporter_version: "0.17.1"
+postgres_exporter_arch: "linux-amd64"  # Default architecture
+
+# PostgreSQL connection parameters
+postgres_exporter_host: localhost
+postgres_exporter_port: 5432
+postgres_exporter_user: postgres
+postgres_exporter_password: postgres
+postgres_exporter_dbname: postgres
+postgres_exporter_sslmode: disable

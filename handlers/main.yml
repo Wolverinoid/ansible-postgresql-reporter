@@ -1,2 +1,8 @@
 ---
-# handlers file for role
+# handlers file for postgres_exporter role
+
+- name: restart postgres_exporter
+  systemd:
+    name: postgres_exporter
+    state: restarted
+  become: yes
